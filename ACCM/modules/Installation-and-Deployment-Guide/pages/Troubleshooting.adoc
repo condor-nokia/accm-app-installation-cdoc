@@ -1,0 +1,79 @@
+include::ROOT:conf/Configuration_properties.adoc[leveloffset=0]
+
+= Troubleshooting
+
+This section provides information related to the troubleshooting of the {app-full-name}.
+
+== Rollback previous version
+
+To roll back to the previous version, execute the following command:
+
+.Usage
+[source, bash]
+----
+helm rollback RELEASE_NAME [REVISION]
+----
+
+[IMPORTANT]
+====
+This operation does not rollback the database. If you are rolling back to a {app-short-name} version with differences in the DB structure, a backup/restore process on the {app-short-name} DB might be necessary for restoring full {app-short-name} functionalities.
+====
+
+.Example, if we want to rollback after install revision 2 we can execute:
+
+[source, bash]
+----
+helm rollback altiplano-cm 1
+----
+
+== Uninstall
+
+To uninstall {app-short-name}, execute the "helm uninstall" command:
+
+.Usage
+[source, bash]
+----
+helm uninstall RELEASE-NAME
+----
+
+.Example
+[source, bash]
+----
+helm uninstall altiplano-cm
+----
+
+[IMPORTANT]
+====
+This operation does not delete the database.
+However, in case {app-short-name} is installed after an undeploy process, {app-short-name} will delete and recreate
+the database from scratch.
+====
+
+
+== Inspect logs when error occurs
+=== Inspect logs in Altiplano's Dashboards
+{app-short-name} sends the application logs to Altiplano's fluentd.
+To inspect application logs please go to Altiplano's dashboards and search for "accm" entries:
+
+https://ALTIPLANO-SERVER/altiplano-indexsearch-dashboards
+
+=== Inspect logs in {app-short-name} pods
+By default, the application debug log is enabled for each pod.
+
+To query a specific {app-short-name} pod execute the following command:
+
+.Usage
+[source, bash]
+----
+kubectl logs pod_id
+----
+
+.Example
+[source, bash]
+----
+kubectl logs pod/altiplano-cm-controller
+----
+
+
+
+include::ROOT:go-back-component.adoc[Back]

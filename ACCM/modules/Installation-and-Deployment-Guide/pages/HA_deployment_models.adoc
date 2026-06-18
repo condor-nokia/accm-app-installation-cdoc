@@ -1,0 +1,8 @@
+include::ROOT:conf/Configuration_properties.adoc[leveloffset=0]
+
+= HA Deployment Models
+
+[NOTE]
+====
+This section will be completed for the official release, if applicable.
+====

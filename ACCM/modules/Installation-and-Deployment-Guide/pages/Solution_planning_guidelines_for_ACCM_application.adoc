@@ -1,0 +1,96 @@
+include::ROOT:conf/Configuration_properties.adoc[leveloffset=0]
+
+= Solution Planning Guidelines for {app-short-name} Application
+
+== What is in this documentation?
+
+This section describes how to plan the deployment of the Nokia Altiplano's {app-full-name} on top of Altiplano Access Controller.
+It also provides CPU, memory, and hard disk recommendations including dimensioning guidelines.
+
+This document is intended for network engineers, planners, and IT staff who are familiar with the functionality of the Nokia Altipano {app-full-name} and
+Altiplano Access Controller product and need to plan the deployment of an Altiplano's {app-full-name} on top of the Altiplano Access Controller.
+
+== Solution Deployment Overview
+
+As {app-full-name} App operates on top of the Altiplano Access Controller, this section will provide details that are specific to the
+{app-full-name} Application that is required over and above the requirements for Altiplano Access Controller.
+For more details on Access Controller Solution Deployment, refer to the section "Altiplano Solution Deployment Overview" in
+the _Nokia Altiplano Access Controller and FWA Controller Solution Planning Guide_.
+
+=== Compatibility
+
+[width="99%",cols="49%,50%,options="header"]
+|===
+| *ACCM* | *Altiplano*
+| {release-number} | {altiplano-release-number}
+|===
+
+== Operating System Specifications
+
+The server and client software requirements for {app-full-name} are the same as that of the {main-base-app} Access Controller.
+
+=== Server Software Requirements
+
+{app-full-name} can be installed on any server with major Linux distribution supporting Container runtime and Kubernetes nodes including RHEL (x86_64 platform only).
+It is a microservices-based application that can be installed on the Kubernetes environment as a single-node or multi-node cluster setup.
+The server should also have container runtime and Helm installed in it.
+
+For the exact versions of Kubernetes, Helm, and Container runtime supported currently by {main-base-app}, refer to the "Getting started with Installation" section of the _Nokia Altiplano Access Controller and FWA Controller Installation and Deployment Guide_.
+
+=== Client Software Requirements
+
+{app-full-name} Application has a separate UI and REST APIs.
+The client host requires any recent versions of the browser - Firefox or Chrome or Microsoft Edge to access the WebUI client of the {app-full-name}.
+
+//== CPU, Memory, and Hard disk Recommendations for {app-short-name} Deployment
+== Recommendations for ACCM Deployment
+
+Refer to the _Nokia Altiplano Access Controller and FWA Controller Solution Planning Guide_ for the dimensioning guidelines pertaining to Access Controller and its associated micro-services.
+
+The below tables provides *only* the additional CPU, memory, and disk requirement for micro-services relevant to {app-short-name} deployment.
+
+
+[IMPORTANT]
+====
+This initial release has not been tested to support large scale of requests.
+The idea is to use it as a demo setup with minimal resources consumption.
+Refer to xref:Installation-and-Deployment-Guide:How_to_install_and_configure_ACCM_application.adoc#_configuring_helm_chart[Configuring Helm chart] section for more details.
+====
+
+[NOTE]
+====
+The resource tables below do not include the additional resources required to perform an application upgrade.
+====
+
+=== Demo setup
+The hardware requirements for {app-full-name} initial release installation are:
+[width="99%",cols="35%,15%,15%,15%,options="header"]
+|===
+| *Service* | *vCPU* | *Memory (GB)* | *Disk (GB)*
+| REST API + UIs | 1,5 | 2 | 10
+| Kafka Listeners | 0,75 | 1 | 10
+| *TOTAL* | *2,25* | *2* | *10*
+|===
+
+////
+== Hard disk recommendations
+
+The hard disk size recommendation accounts for the following key parameters:
+
+[width="100%",cols="53%,47%",options="header",]
+|===
+| *Parameters* |*Value*
+|device-config-backup |7 days
+|Opensearch logstash |15 days
+|Opensearch alarms-history |90 days
+|Opensearch health-alarms |90 days
+|Opensearch inventory |30 days
+|Opensearch user-activity-log |30 days
+|Opensearch syslog |15 days
+|OpenTSDB |7 days
+|PTS Data |15 days
+|Kafka Topics |7 days (PM topics: 2 hours)
+|===
+////
+
+include::ROOT:go-back-component.adoc[Back]

@@ -1,0 +1,705 @@
+include::ROOT:conf/Configuration_properties.adoc[leveloffset=0]
+
+:source-language: bash
+
+= How to Install and Configure the {app-short-name} on Altiplano
+
+== Overview
+
+Ensure that the required hardware and software resources on your Kubernetes host, as described in the
+"Getting started with Installation" section of the _Installation and Deployment Guide for Nokia Altiplano Access Controller and FastMile Controller Guide_.
+Also, refer to the xref:Solution_planning_guidelines_for_ACCM_application.adoc[Solution Planning Guidelines for {app-short-name} Application] for the
+dimensioning needed to run {app-short-name} on top of {main-base-app}.
+
+[NOTE]
+====
+. This documentation assumes that you are familiar with the use of Helm charts and therefore does not provide details about Helm commands.
+
+. To perform the installation, following skill set is required:
+.. Knowledge of Kubernetes (K8s)
+.. Container runtimes
+.. Helm commands
+.. Unix commands
+====
+
+== Prerequisites
+
+. A database called {accm-dbname}, must be created on {main-base-app}’s MariaDB with the correct credentials. +
+In standard {main-base-app} installations, the {accm-dbname} database and user should already be created.
+If the database or MariaDB user does not exist, refer to the xref:appendices/Configuring_Database.adoc[Configuring Database] section for the required steps.
+
+. A Helm chart must be downloaded. +
+Refer to the xref:_accm_helm_chart[{app-short-name} Helm chart] section for the required steps.
+
+== {app-short-name} Helm chart
+
+In this initial release, the Helm chart is distributed by Condor to Nokia through an AWS repository.
+In future and official releases, Nokia will upload the Helm chart to the Nokia Software Repository or to Nokia SWDP.
+
+To download the sample Helm chart from the *AWS*, the server requires internet access.
+The procedure for downloading the Helm chart is given below.
+
+=== Download the helm chart from the Condor AWS repository
+To download the helm chart from Condor AWS repository, the following steps must be executed:
+
+* Install "AWS Command Line Interface"
+* Download the chart to the server where the application will be installed using the following commands:
+** Import the CSV file provided by Condor with the credentials to log in to AWS:
+
+[source,bash]
+----
+aws configure import --csv file://registry-client_accessKeys.csv
+----
+
+** Login to registry
+
+[source,bash]
+----
+aws ecr get-login-password --region us-east-1 --profile registry-client \
+| helm registry login --username AWS --password-stdin \
+288739758763.dkr.ecr.us-east-1.amazonaws.com
+----
+
+** Execute helm login to AWS registry:
+
+[source,bash]
+----
+aws ecr get-login-password --region us-east-1 --profile registry-client \
+| helm registry login --username AWS --password-stdin \
+288739758763.dkr.ecr.us-east-1.amazonaws.com
+----
+
+** Download the chart from AWS:
+
+[source,bash]
+----
+helm pull oci://288739758763.dkr.ecr.us-east-1.amazonaws.com/altiplano-cm --version 26.3.0-MAIN-0005
+----
+
+[NOTE]
+====
+The steps to retrieve the token can be executed on any machine with internet access.
+It does not have to be the same machine where the application will be installed.
+====
+
+=== Configuring Helm chart
+
+When installing the {app-short-name}, configuration in the *values.yaml* file included in the chart release is used.
+This file allows you to define the configurations required for the {app-full-name} to function properly.
+The different available configuration sections are explained below.
+
+==== imagePullSecrets
+
+Configuration is required when the images are downloaded from Condor AWS registry or any other private registry.
+Set enabled=true and provide the appropriate login credentials in the “auth” attribute the proper login credentials that to allow access connection to the registry.
+
+In the case of Condor registry, the token to be added to the "auth" attribute can be retrieved by executing the
+following steps:
+
+* Install "AWS Command Line Interface" if it is not installed yet
+
+* Import the CSV file provided by Condor with the credentials to log in to AWS:
+
+[source,bash]
+----
+aws configure import --csv file://registry-client_accessKeys.csv
+----
+
+* Execute docker login to AWS registry to retrieve the token:
+
+[source,bash]
+----
+aws ecr get-login-password --region us-east-1 --profile registry-client | docker login
+--username AWS --password-stdin 288739758763.dkr.ecr.us-east-1.amazonaws.com
+----
+
+* Copy the generated token in the "auth" attribute from the config.json file of docker
+(The output of the aws ecr command show the path of the config.json file. Default one is:
+/home/USER/.docker/config.json)
+
+
+* Add the output of the last command (AWS token) to the "auth" attribute in the
+values.yml file
+
+[NOTE]
+====
+The steps to retrieve the token can be executed in any machine with internet access.
+It does not have to be the same machine where the application will be installed.
+====
+
+==== {app-short-name} Configuration
+
+This section allows setting specific {app-short-name} configuration used by the {app-short-name} services.
+
+[IMPORTANT]
+====
+Complete at least the variables ALTIPLANO_SERVER and KEYCLOAK_PORTAL_SECRET since they do not have a default value.
+
+Also take into account the variable IBN_INTENT_FOR_CLUSTER since it refers to the intent type used for the cluster intents and must match
+for correct operation.
+====
+
+[width="100%",cols="20%,50%,10%,10%,10%",options="header"]
+|===
+|*Name* |*Description* |*Mandatory (Yes/No)* |*Default Value* |*Allowed Values*
+
+|ALTIPLANO_SERVER
+|{main-base-app} IP or Hostname that the {app-short-name} uses to call the Altiplano's available services. This value must be also used to access {app-short-name}
+|Yes
+|None
+|IP Address
+
+|KEYCLOAK_PORTAL_SECRET
+|ALTIPLANO client secret from keycloak. It must be copied from the keycloak configuration.
+|Yes
+|None
+|String
+
+|ALTIPLANO_BASE_URL
+|{main-base-app}’s Access controller REST API path. (There is no need to change default value except {main-base-app} changes the access controller REST API path)
+|No
+|"/nokia-altiplano-ac"
+|String
+
+|ALTIPLANO_OPENSEARCH_PATH_URL
+|{main-base-app}’s OpenSearch REST API path. (There is no need to change default value except {main-base-app} changes the OpenSearch REST API path)
+|No
+|"/altiplano-indexsearch"
+|String
+
+|IBN_INTENT_FOR_CLUSTER
+|Intent type name used for the cluster instances.
+|Yes
+|"leaf-spine-network"
+|String
+
+|CP_LEAVES_BATCH_SIZE
+|Size of the batch for CP leaves processing.
+|Yes
+|1
+|Integer
+
+|ACC_LEAVES_BATCH_SIZE
+|Size of the batch for ACC leaves processing.
+|Yes
+|1
+|Integer
+
+|REMOTE_OLT_BATCH_SIZE
+|Size of the batch for remote OLT processing.
+|Yes
+|1
+|Integer
+
+|CAMPAIGN_NAME_MAX_LENGTH
+|Maximum length allowed for the campaign name.
+|Yes
+|18
+|Integer
+
+|CAMPAIGN_EXECUTION_WINDOW_MINUTES
+|Execution window for the campaign in minutes.
+|Yes
+|20
+|Integer
+
+|ALTIPLANO_ACTIVITY_MANAGER
+|Service name for the Altiplano activity manager.
+|Yes
+|"nokia-altiplano-network-virtualizer"
+|String
+
+|ALTIPLANO_ACTIVITY_ABORT_PREPARATION_DAYS
+|Number of days for abort preparation.
+|Yes
+|3
+|Integer
+
+|ALTIPLANO_ACTIVITY_TIMEOUT_DOWNLOAD
+|Timeout for the download activity in minutes.
+|Yes
+|60
+|Integer
+
+|ALTIPLANO_ACTIVITY_TIMEOUT_UPGRADE
+|Timeout for the upgrade activity in minutes.
+|Yes
+|120
+|Integer
+
+|ALTIPLANO_ACTIVITY_REACHABLE
+|Check if the activity target must be reachable.
+|Yes
+|true
+|Boolean
+
+|ALTIPLANO_ACTIVITY_FORCE_ONT_SOFTWARE
+|Force the ONT software version during activity.
+|Yes
+|true
+|Boolean
+
+|ALTIPLANO_ACTIVITY_PREPARE_DEVICE_INTENT
+|Prepare device intent before starting the activity.
+|Yes
+|false
+|Boolean
+
+|ALTIPLANO_ACTIVITY_OPERATION_DOWNLOAD
+|Operation type for software download.
+|Yes
+|"software-download"
+|String
+
+|ALTIPLANO_ACTIVITY_OPERATION_UPGRADE
+|Operation type for software upgrade.
+|Yes
+|"software-upgrade"
+|String
+
+|ALTIPLANO_ACTIVITY_SYNC_DEVICE_CONFIG
+|Synchronize device configuration.
+|Yes
+|false
+|Boolean
+
+|ALTIPLANO_ACTIVITY_MAX_ERRORS_BEFORE_PAUSE
+|Maximum number of errors before pausing the activity.
+|Yes
+|""
+|String
+
+|ALTIPLANO_ACTIVITY_PERCENT_DEVICE_READY
+|Required percentage of ready devices to proceed.
+|Yes
+|0
+|Integer
+
+|ALTIPLANO_ACTIVITY_HARDWARE_TYPE_INSIDE
+|Hardware type filter for internal activities.
+|Yes
+|""
+|String
+
+|ALTIPLANO_ACTIVITY_SCHEDULED_START_TIME
+|Specific scheduled start time for the activity.
+|Yes
+|""
+|String
+
+|ALTIPLANO_ACTIVITY_START_NO_LATER_THAN
+|Deadline to start the activity.
+|Yes
+|""
+|String
+
+|ALTIPLANO_ACTIVITY_MAX_JOB_DURATION
+|Maximum duration for the job execution.
+|Yes
+|240
+|Integer
+
+|ALTIPLANO_ACTIVITY_ONT_ACTIVATION_OPTION
+|Option for ONT activation timing.
+|Yes
+|"immediate-activation"
+|String
+
+|ALTIPLANO_ACTIVITY_ONT_SW_MAPPING_MODES
+|Software mapping modes for ONT.
+|Yes
+|"[]"
+|String
+
+|ALTIPLANO_ACTIVITY_DOWNLOAD_OPTION
+|Download option for the device.
+|Yes
+|"device-staging-ont"
+|String
+
+|ACTIVITY_POST_CHECKS_ENABLED
+|Flag to enable post-execution validation checks for activities.
+|Yes
+|false
+|Boolean
+
+|ACTIVITY_SUFFIX_DOWNLOAD
+|Suffix to be added to the download activity.
+|Yes
+|"DL"
+|String
+
+|ACTIVITY_SUFFIX_UPGRADE_SPINE
+|Suffix to be added to the upgrade spine activity.
+|Yes
+|"UPG_SP"
+|String
+
+|ACTIVITY_SUFFIX_UPGRADE_CP_BATCH
+|Suffix to be added to the upgrade CP Batch activity.
+|Yes
+|"UPG_CPB"
+|String
+
+|ACTIVITY_SUFFIX_UPGRADE_ACC_BATCH
+|Suffix to be added to the upgrade Access Batch activity.
+|Yes
+|"UPG_ACB"
+|String
+
+|ACTIVITY_SUFFIX_UPGRADE_HEADEND
+|Suffix to be added to the upgrade headend activity.
+|Yes
+|"UPG_HE"
+|String
+
+|ACTIVITY_SUFFIX_UPGRADE_OLT_BATCH
+|Suffix to be added to the upgrade olt batch activity.
+|Yes
+|"UPG_OLTB"
+|String
+
+|ALTIPLANO_ACTIVITIES_PATH
+|Endpoint base path for managing Altiplano activities.
+|Yes
+|"/activities"
+|String
+
+|NOTIFICATION_POLLING_INTERVAL
+|Interval in milliseconds to check for notifications in DB.
+|Yes
+|1000
+|Integer
+
+|LIGHTSPAN_DEVICES_INTENT_TYPES
+|Intent types that are used for lightspan devices.
+|Yes
+|"device-fx,device-mf"
+|String
+
+|IP_DEVICES_INTENT_TYPES
+|Intent types that are used for IP devices.
+|Yes
+|"device-ixr"
+|String
+
+|ACTIVITY_POST_CHECKS_ENABLED
+|Post checks validations flag that allows to enable/disable all the validations .
+|Yes
+|"true"
+|Boolean
+
+|ACTIVITY_TRAFFIC_POST_CHECK_ENABLED
+|Post checks traffic validations flag that allows to enable/disable only the traffic part of the validations.
+|Yes
+|"false"
+|Boolean
+
+|DEVICE_UPLINK_CONNECTION_INTENT_TYPE
+|Intent types that are used for uplink connections.
+|Yes
+|"uplink-connection"
+|String
+
+|DEVICE_ETHERNET_CONNECTION_INTENT_TYPE
+|Intent types that are used for ethernet connections.
+|Yes
+|"ethernet-connection"
+|String
+
+|REACT_APP_SUGGEST_API
+|Suggest API used for software in ACCM UI.
+|Yes
+|"/campaign-manager-api/rest/software/v1"
+|String
+
+|REACT_APP_SUGGEST_MAP_DEVICE_TYPE
+|Suggest device type API used for software in ACCM UI.
+|Yes
+|'{\"composite-device\":\"/campaign-manager-api/rest/software/v1/suggest/interfaceVersionsDirectFromAV\",\"ixr-device\":\"/campaign-manager-api/rest/mds/suggest/interfaceVersionsDirectFromNSP\"}'
+|String
+
+|ALTIPLANO_IBN_LIVE_COLLECTION_PATH
+|Altiplano's live collection REST API used by the ACCM application.
+|Yes
+|"/rest/ibn/livecollection/v1"
+|String
+
+|KEYCLOAK_URL
+|Path for Keycloak login authentication.
+|Yes
+|"/rest/auth/login"
+|String
+
+|ACCM_KEYCLOAK_USER
+|Username for Keycloak authentication.
+|Yes
+|"adminuser"
+|String
+
+|ACCM_KEYCLOAK_PASSWORD
+|Password for Keycloak authentication.
+|Yes
+|"password"
+|String
+
+|ALTIPLANO_DELETE_ACTIVITIES_PATH
+|Endpoint path to delete activities.
+|Yes
+|"/activities/delete"
+|String
+
+|ALTIPLANO_URL_SM_CAMPAIGNS_ACTIVITIES
+|URL for SM campaigns activities management.
+|Yes
+|"/rest/sm/campaigns"
+|String
+
+|ALTIPLANO_URL_TARGET_SOLUTIONS
+|URL to retrieve multiple target solutions.
+|Yes
+|"/rest/sm/target-solutions"
+|String
+
+|ALTIPLANO_URL_TARGET_SOLUTION
+|URL to retrieve a specific target solution.
+|Yes
+|"/rest/sm/target-solution"
+|String
+
+|ALTIPLANO_URL_SOFTWARE_CAMPAIGNS
+|URL for software campaigns version 1.
+|Yes
+|"/rest/software/v1/campaigns"
+|String
+
+|ALTIPLANO_URL_SM_CAMPAIGNS
+|Base URL for SM campaigns.
+|Yes
+|"/rest/sm/campaign"
+|String
+
+|ALTIPLANO_URL_DEVICES_FILTER
+|URL to filter devices within a campaign.
+|Yes
+|"/rest/sm/campaigns/activities/devices?orderBy=NAME&orderType=ASC&pageSize=10000"
+|String
+
+|ALTIPLANO_URL_TOPOLOGY_IBN
+|URL path for IBN topology and intents.
+|Yes
+|"/rest/restconf/data/ibn:ibn/intent="
+|String
+
+|SW_MATRIX_API_PATH
+|Path for software matrices API.
+|Yes
+|"/software-matrices"
+|String
+
+|ALTIPLANO_AUTH_BASE_PATH_URL
+|Base path for Altiplano SSO authentication.
+|Yes
+|"/altiplano-sso"
+|String
+
+|ALTIPLANO_AUTH_DEFAULT_REALM
+|Default authentication realm.
+|Yes
+|"master"
+|String
+
+|KEYCLOAK_CLIENT_ID
+|Client ID used by the ACCM to retrieve tokens.
+|Yes
+|"ALTIPLANO"
+|String
+
+|KEYCLOAK_PORTAL_ID
+|Client ID used for Keycloak portal.
+|Yes
+|"campaign-manager_portal"
+|String
+
+|REACT_APP_INGRESS_HOST
+|Ingress host URL for the web application.
+|Yes
+|"https://localhost:8443"
+|String
+
+|REACT_APP_CONTEXT_ROOT
+|Context root for the React application.
+|Yes
+|"/campaign-manager-webapp"
+|String
+
+|REACT_APP_KEYCLOAK_URL
+|Keycloak URL used by the React frontend.
+|Yes
+|"https://localhost:8443/altiplano-sso"
+|String
+
+|REACT_APP_KEYCLOAK_REALM
+|Keycloak realm used by the React frontend.
+|Yes
+|"master"
+|String
+
+|REACT_APP_KEYCLOAK_CLIENT_ID
+|Keycloak client ID for the React application.
+|Yes
+|"campaign-manager_portal"
+|String
+
+|REACT_APP_KEYCLOAK_TOKEN_ENDPOINT
+|Endpoint for retrieving Keycloak tokens in the UI.
+|Yes
+|"https://localhost:8443/campaign-manager-ac/web/token"
+|String
+
+|REACT_APP_GRID_PAGE_SIZE
+|Default page size for data grids in the UI.
+|Yes
+|"10"
+|String
+
+|FLUENTD_LOG_HOST
+|Host address for the Fluentd logging service.
+|Yes
+|"altiplano-fluentd"
+|String
+
+|POD_LOG_LEVEL
+|Logging level for the application pod.
+|Yes
+|"debug"
+|String
+
+|ACTIVITY_ACTIVE_WAIT_ENABLED
+|Flag to enable/disable the active wait for activities. If it is true then polling is used to detect when an activity changes state. This mechanism can be used if Kafka notifications are not working and the older polling mechanism is desired.
+|Yes
+|"false"
+|Boolean
+
+|ACTIVITY_STATUS_NOTIFICATION_TIMEOUT_MINUTES
+|Time in minutes that the orchestrator waits for an activity status change notification to arrive from Altiplano. Once this time has elapsed, the campaign ends with a timeout error.
+|Yes
+|60
+|Integer
+
+|ACCM_KEYCLOAK_TOKEN_ACCEPTANCE_LEEWAY_SECONDS
+|Buffer used when validating token expiration to account for time differences between the Keycloak server and the application server.
+|Yes
+|10
+|Integer
+
+|CAMPAIGN_NAME_SEPARATOR_CHAR
+|Character used as a separator for parts in the campaign and activity naming scheme.
+|Yes
+|"_"
+|String(length: 1)
+
+|VALIDITY_WINDOW_ENABLED
+|Flag to enable/disable the validity window feature.
+|Yes
+|"true"
+|Boolean
+
+|ACTIVITY_SUFFIX_UPGRADE_ONT
+|Suffix to be added to the ONT upgrade activity.
+|Yes
+|"UPG_ONT"
+|String
+
+|CAMPAIGN_NAME_RESTRICTED_CHARS
+|Unsafe characters that are not allowed to be used in campaign names.
+|Yes
+|""
+|String
+
+|===
+
+==== Database Configuration
+
+This section allows configuring the image that must be downloaded to install the Database on {main-base-app}’s MariaDB.
+
+Database installation mode supports: normal, clean (deletes all tables before installing) or disabled modes. Default mode is: clean.
+
+Database upgrade mode supports: normal, clean (deletes all tables before upgrading) or disabled modes. Default mode is: normal.
+
+At the end of this section we can find the MariaDB information, where to install the Metadata and data. Also, the credentials needed to connect to MariaDB. Default values are:
+
+* *host:* {accm-dbhost}
+* *name:* {accm-dbname}
+* *user:* {accm-dbuser}
+* *password:* {accm-dbpassword}
+
+==== {app-short-name} Ingress controller Configuration
+
+This section allows configuring the Kubernetes ingress controller to redirect the request to the correct services.
+There is no need to change this configuration except for specific requirements.
+
+The {app-short-name} exposes different interfaces. Default path values for those url interfaces are:
+
+* */campaign-manager-api:* It is the url used to access the REST API that allows to manage campaigns in the {app-short-name}.
+* */campaign-manager-webapp:* It is the url used to access the Web UI.
+
+For more details about the interfaces exposed by {app-short-name}, refer to
+xref:Installation-and-Deployment-Guide:appendices/ACCM_Exposed_Interfaces.adoc[{app-short-name} Exposed Interfaces] section.
+
+==== {app-short-name} Provisioning (Web + Controller) module Configuration
+
+This section allows configuring the image that must be downloaded to install the {app-short-name} REST API and the UI module in Kubernetes.
+
+=== Installing Helm chart
+
+Before executing the installation command, ensure that:
+
+- All the prerequisites are met. Refer to the xref:_prerequisites[Prerequisites] section.
+- The correct values are configured at the *values.yaml* file. For more details about this configuration, refer to the xref:_configuring_helm_chart[Configuring Helm chart] section.
+- The following values have been configured:
+* *ALTIPLANO_SERVER:* The {main-base-app} IP or Hostname used by the {app-short-name} to access {main-base-app}’s available services. This same value must also be used to access the {app-short-name}.
+
+To install the application, execute the following command:
+
+[source, bash]
+----
+$ helm install altiplano-cm ./
+----
+
+For example, if the chart was decompressed at /home/nokia-installer/altiplano-cm execute the following command:
+
+[source, bash]
+----
+$ helm install altiplano-cm /home/nokia-installer/altiplano-cm
+----
+
+
+* Wait for the installation of the helm chart to be completed.
+To check all the required {app-short-name} pods and services are up and running, execute the following command:
+
+.Usage
+[source, bash]
+----
+$ kubectl get pods,svc -n nokia | grep cm
+----
+
+For example:
+
+Sample output of the command (it must show the following pods and services in "Running" state)
+[source, bash, subs=attributes]
+
+[source, bash]
+----
+$ kubectl get pods,svc -n nokia | grep cm
+pod/altiplano-cm-campaign-kafka-listener-77b7c75ff8-mdct4           1/1     Running   0             17h
+pod/altiplano-cm-controller-8697b584cc-zm6pw                        1/1     Running   0             17h
+service/altiplano-cm-controller                         ClusterIP   10.103.41.179    <none>        8080/TCP,8443/TCP----
+----
+=== Installation Verification
+
+Open a browser and go to link:https://{altiplano-host}/{accm-web-context}[https://{altiplano-host}/{accm-web-context},window=_blank], where {altiplano-host} must be replaced with the public IP or the hostname where {main-base-app} is installed.
+
+If the {app-short-name} is successfully installed, the WEB UI is shown
+
+include::ROOT:go-back-component.adoc[Back]
