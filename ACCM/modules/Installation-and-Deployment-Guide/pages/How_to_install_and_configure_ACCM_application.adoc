@@ -28,6 +28,8 @@ dimensioning needed to run {app-short-name} on top of {main-base-app}.
 In standard {main-base-app} installations, the {accm-dbname} database and user should already be created.
 If the database or MariaDB user does not exist, refer to the xref:appendices/Configuring_Database.adoc[Configuring Database] section for the required steps.
 
+. The Keycloak needs to be configured in order to support authentication for {app-short-name}. Refer to the xref:appendices/Configuring_Keycloak.adoc[Keycloak configuration] section for the required steps.
+
 . A Helm chart must be downloaded. +
 Refer to the xref:_accm_helm_chart[{app-short-name} Helm chart] section for the required steps.
 
@@ -171,6 +173,12 @@ for correct operation.
 |Intent type name used for the cluster instances.
 |Yes
 |"leaf-spine-network"
+|String
+
+|ALTIPLANO_GEO_ACTIVE_SITE
+|Defines whether the current deployment is the active geographic site ("true"). If it is not set to "true", the initContainer blocks the application from starting and waits in a loop until the site is promoted to active.
+|Yes
+|"true"
 |String
 
 |CP_LEAVES_BATCH_SIZE

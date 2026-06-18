@@ -1,6 +1,5 @@
 name: ACCM
-title: Nokia Altiplano Access Cluster Campaign Manager Installation, Deployment and User Guide
+title: Nokia Altiplano Access Cluster Campaign Manager Installation and Configuration Guide
 version: master
 nav:
 - modules/Installation-and-Deployment-Guide/nav.adoc
-- modules/User_Guide/nav.adoc
