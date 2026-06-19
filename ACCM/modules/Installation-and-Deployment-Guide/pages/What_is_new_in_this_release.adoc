@@ -3,5 +3,6 @@ include::ROOT:conf/Configuration_properties.adoc[leveloffset=0]
 = What's new in Release {release-number}{prerelease-tag}
 
 * New installation variable, ALTIPLANO_GEO_ACTIVE_SITE.
+* Added xref:appendices/Configuring_Keycloak.adoc[Keycloak configuration] section.
 
 include::ROOT:go-back-component.adoc[Back]
