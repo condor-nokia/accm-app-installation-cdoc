@@ -8,8 +8,8 @@
 
 * Installation and Configuration
 ** xref:How_to_install_and_configure_ACCM_application.adoc[How to Install and Configure ACCM]
-** xref:Migration_upgrade_procedure.adoc[Migration/Upgrade procedure]
+// ** xref:Migration_upgrade_procedure.adoc[Migration/Upgrade procedure]
 ** xref:Licensing_Altiplano_ACCM_Application.adoc[Licensing]
 ** xref:Solution_planning_guidelines_for_ACCM_application.adoc[Solution Planning Guidelines]
-** xref:HA_deployment_models.adoc[HA Deployment Models]
+// ** xref:HA_deployment_models.adoc[HA Deployment Models]
 ** xref:Troubleshooting.adoc[Troubleshooting]
