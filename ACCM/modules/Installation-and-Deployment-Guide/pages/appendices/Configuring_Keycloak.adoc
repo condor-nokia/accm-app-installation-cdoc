@@ -2,9 +2,34 @@ include::ROOT:conf/Configuration_properties.adoc[leveloffset=0]
 
 = Keycloak Configuration
 
-[IMPORTANT]
-====
-For this initial release, the admin user of Altiplano can be used to execute the requests.
-====
+== Introduction
+
+The Altiplano Access Cluster Campaign Manager (ACCM) relies on Keycloak to authenticate its users. The required Keycloak client for ACCM is named *ALTIPLANO* and is already pre-configured in the system.
+
+== How to configure Keycloak for ACCM
+
+To enable ACCM authentication, you only need to update the existing ALTIPLANO client with the specific ACCM web application URLs. Follow the steps below:
+
+1. Login to Altiplano’s Keycloak using admin credentials. For example, if Altiplano is available at IP `100.121.38.81`, the Keycloak URL is https://100.121.38.81/altiplano-sso[https://100.121.38.81/altiplano-sso].
+
+2. Navigate to the *Clients* section on the left-hand menu.
+
+3. Locate and click on the *ALTIPLANO* client to edit its settings.
+
+4. Scroll down to the URL configuration parameters and add the ACCM endpoints (replace `<ALTIPLANO_SERVER>` with your actual Altiplano public hostname or IP, e.g., `100.121.38.81`):
++
+In the *Valid redirect URIs* field, add:
++
+----
+https://<ALTIPLANO_SERVER>/campaign-manager-webapp/*
+----
++
+In the *Valid post logout redirect URIs* field, add:
++
+----
+https://<ALTIPLANO_SERVER>/campaign-manager-webapp/*
+----
+
+5. Save the changes.
 
 include::ROOT:go-back-component.adoc[Back]
