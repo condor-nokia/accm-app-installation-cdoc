@@ -169,6 +169,24 @@ for correct operation.
 |"/altiplano-indexsearch"
 |String
 
+|FLUENTD_LOG_HOST
+|The Altiplano Fluentd service that ACCM uses to write logs. (There is no need to change default value except if Altiplano Fluentd service name changes)
+|No
+|"altiplano-fluentd"
+|String
+
+|FLUENTD_LOG_LEVEL
+|Fluentd log level.
+|No
+|"info"
+|String
+
+|FLUENTD_LOG_TIMEOUT
+|Timeout in milliseconds for the Fluentd requests.
+|No
+|"10000"
+|Unsigned Integer
+
 |IBN_INTENT_FOR_CLUSTER
 |Intent type name used for the cluster instances.
 |Yes
