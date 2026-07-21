@@ -145,6 +145,12 @@ for correct operation.
 |===
 |*Name* |*Description* |*Mandatory (Yes/No)* |*Default Value* |*Allowed Values*
 
+|INGRESS_CONTROLLER_TYPE
+|Defines the type of Ingress Controller expected by ACCM to configure the corresponding routing rules. It defaults to 'kong', but also accepts 'nginx' for backward compatibility with the previously used ingress.
+|Yes
+|"kong"
+|String
+
 |ALTIPLANO_SERVER
 |{main-base-app} IP or Hostname that the {app-short-name} uses to call the Altiplano's available services. This value must be also used to access {app-short-name}
 |Yes
