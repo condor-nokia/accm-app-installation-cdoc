@@ -649,6 +649,36 @@ for correct operation.
 |""
 |String
 
+|DEEPLINK_PATH_SOFTWARE_MANAGMENT_CAMPAIGNS
+|Specifies the URL path used to navigate directly to a specific campaign within the Software Management interface. It must contain the campaign name placeholder specified in the DEEPLINK_CAMPAIGN_NAME_PLACEHOLDER variable.
+|Yes
+|"/software-management/#/campaigns/{altiplanoCampaignName}"
+|String
+
+|DEEPLINK_PATH_SOFTWARE_MANAGMENT_ACTIVITY_DEVICES
+|Specifies the URL path used to navigate directly to a specific device's activity details within a software management campaign. It must contain the placeholders for campaign name, activity name, and device name specified in the variables
+|Yes
+|"/software-management/#/campaigns/{altiplanoCampaignName}/activities/{activityName}/devices/{deviceName}"
+|String
+
+|DEEPLINK_CAMPAIGN_NAME_PLACEHOLDER
+|Defines the exact placeholder string used in the deep link paths that the system will dynamically replace with the actual Software Management's campaign name at runtime.
+|Yes
+|"{altiplanoCampaignName}"
+|String
+
+|DEEPLINK_ACTIVITY_NAME_PLACEHOLDER
+|Defines the exact placeholder string used in the deep link paths that the system will dynamically replace with the actual Software Management's activity name at runtime.
+|Yes
+|"{activityName}"
+|String
+
+|DEEPLINK_DEVICE_NAME_PLACEHOLDER
+|Defines the exact placeholder string used in the deep link paths that the system will dynamically replace with the target device's name at runtime.
+|Yes
+|"{deviceName}"
+|String
+
 |===
 
 ==== Database Configuration

@@ -2,6 +2,8 @@ include::ROOT:conf/Configuration_properties.adoc[leveloffset=0]
 
 = What's new in Release {release-number}{prerelease-tag}
 
-* New configuration parameter to select KONG or NGNIX ingress controller.
+* New configuration parameters for the deeplink feature are available in values.yml file of the chart:
+DEEPLINK_PATH_SOFTWARE_MANAGMENT_CAMPAIGNS, DEEPLINK_PATH_SOFTWARE_MANAGMENT_ACTIVITY_DEVICES, DEEPLINK_CAMPAIGN_NAME_PLACEHOLDER,
+DEEPLINK_ACTIVITY_NAME_PLACEHOLDER, DEEPLINK_DEVICE_NAME_PLACEHOLDER.
 
 include::ROOT:go-back-component.adoc[Back]
