@@ -2,8 +2,7 @@ include::ROOT:conf/Configuration_properties.adoc[leveloffset=0]
 
 = What's new in Release {release-number}{prerelease-tag}
 
-* New configuration parameters for the deeplink feature are available in values.yml file of the chart:
-DEEPLINK_PATH_SOFTWARE_MANAGMENT_CAMPAIGNS, DEEPLINK_PATH_SOFTWARE_MANAGMENT_ACTIVITY_DEVICES, DEEPLINK_CAMPAIGN_NAME_PLACEHOLDER,
-DEEPLINK_ACTIVITY_NAME_PLACEHOLDER, DEEPLINK_DEVICE_NAME_PLACEHOLDER.
+* New configuration parameter are available in values.yml file of the chart:
+STATUS_PER_DEVICES_MAX_PAGE_SIZE.
 
 include::ROOT:go-back-component.adoc[Back]

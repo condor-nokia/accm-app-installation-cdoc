@@ -457,6 +457,12 @@ for correct operation.
 |"/rest/ibn/livecollection/v1"
 |String
 
+|STATUS_PER_DEVICES_MAX_PAGE_SIZE
+|Defines the maximum page size for the endpoint statusPerDevices from Software Managment Module in Altiplano. Only accepts values greater than 0 (Zero)
+|Yes
+|200
+|Integer
+
 |KEYCLOAK_URL
 |Path for Keycloak login authentication.
 |Yes
