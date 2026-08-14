@@ -2,7 +2,6 @@ include::ROOT:conf/Configuration_properties.adoc[leveloffset=0]
 
 = What's new in Release {release-number}{prerelease-tag}
 
-* New configuration parameter are available in values.yml file of the chart:
-STATUS_PER_DEVICES_MAX_PAGE_SIZE.
+* New installation procedure
 
 include::ROOT:go-back-component.adoc[Back]

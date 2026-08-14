@@ -35,99 +35,465 @@ Refer to the xref:_accm_helm_chart[{app-short-name} Helm chart] section for the 
 
 == {app-short-name} Helm chart
 
-In this initial release, the Helm chart is distributed by Condor to Nokia through an AWS repository.
-In future and official releases, Nokia will upload the Helm chart to the Nokia Software Repository or to Nokia SWDP.
+You can download the sample Helm charts from the *Nokia Software repository* or *Software Delivery platform (SWDP)* (requires internet access to your host).
 
-To download the sample Helm chart from the *AWS*, the server requires internet access.
-The procedure for downloading the Helm chart is given below.
+The procedure to download the helm charts is given below.
 
-=== Download the helm chart from the Condor AWS repository
-To download the helm chart from Condor AWS repository, the following steps must be executed:
+=== Download the helm charts from the Nokia Software repository
 
-* Install "AWS Command Line Interface"
-* Download the chart to the server where the application will be installed using the following commands:
-** Import the CSV file provided by Condor with the credentials to log in to AWS:
+====
+When executing the *NokiaSWRepoAccessProvider* binary file, enter *Altiplano Applications* as an input when prompted for *Product to access*.
 
-[source,bash]
+For non-docker environment, execute the script with argument --nodocker
+[source]
 ----
-aws configure import --csv file://registry-client_accessKeys.csv
+./NokiaSWRepoAccessProvider --nodocker
 ----
 
-** Login to registry
+*The following procedure is applicable for Kubernetes environment with containerd
+runtime.*
 
-[source,bash]
+*config.toml* (/etc/containerd/config.toml) must be configured for authentication on every Kubernetes node where you want to download the {app-short-name} image for Kubernetes environment with containerd runtime.
+
+For example::
+
+. Take a backup of config.toml
+. Edit config.toml.
+.. sudo vi /etc/containerd/config.toml.
+.. Substitute the values for <USERNAME> with output of echo $NOKIALOGIN.
+.. Substitute the values for <PASSWORD> with output of echo $NOKIAPWD.
+.. Substitute the values for <AUTH> with output of echo -n '$NOKIALOGIN:$NOKIAPWD' |
+base64.
++
+[source]
 ----
-aws ecr get-login-password --region us-east-1 --profile registry-client \
-| helm registry login --username AWS --password-stdin \
-288739758763.dkr.ecr.us-east-1.amazonaws.com
+[plugins]
+  [plugins.cri]
+    sandbox_image = "artifactory.net.nokia.com/pause:3.9"
+    [plugins.cri.registry]
+        [plugins.cri.registry.mirrors]
+            [plugins.cri.registry.mirrors."docker.io"]
+                endpoint = ["https://registry-1.docker.io"]
+            [plugins.cri.registry.mirrors."artifactory.net.nokia.com"]
+                endpoint = ["https://artifactory.net.nokia.com"]
+        [plugins.cri.registry.configs]
+            [plugins.cri.registry.configs."artifactory.net.nokia.com".auth]
+                username = "<USERNAME>"
+                password = "<PASSWORD>"
+                auth = "<AUTH>"
 ----
 
-** Execute helm login to AWS registry:
+. Restart containerd
+.. sudo systemctl restart containerd
 
-[source,bash]
+. Check status of containerd.
+.. sudo systemctl status containerd.
+
+*The following procedure is applicable for Kubernetes environment with crio runtime.*
+
+*crio.conf* (/etc/crio/crio.conf) must be configured for authentication on every Kubernetes node where you want to download the {app-short-name} image for Kubernetes environment with crio runtime.
+
+For example::
+
+. Take a backup of crio.conf.
+. Create a config.json file.
+.. sudo vi config.json
+.. Substitute the values for <AUTH> with output of echo -n '$NOKIALOGIN:$NOKIAPWD' | base64.
++
+[source, json]
 ----
-aws ecr get-login-password --region us-east-1 --profile registry-client \
-| helm registry login --username AWS --password-stdin \
-288739758763.dkr.ecr.us-east-1.amazonaws.com
+{
+  "auths": {
+          "artifactory.net.nokia.com": {
+          "auth": "<AUTH>"
+          }
+  }
+}
 ----
 
-** Download the chart from AWS:
-
-[source,bash]
+. Edit crio.conf.
+.. sudo vi /etc/crio/crio.conf
+.. Subtitute the path for <PATH_TO_CONFIG.JSON>
++
+Example:
++
+[source]
 ----
-helm pull oci://288739758763.dkr.ecr.us-east-1.amazonaws.com/altiplano-cm --version 26.3.0-MAIN-0005
+# The path to a file containing credentials necessary for pulling
+images from
+
+  # secure registries. The file is similar to that of
+/var/lib/kubelet/config.json
+
+  global_auth_file = "<PATH_TO_CONFIG.JSON>"
+----
+
+. Restart crio.
+.. sudo systemctl restart crio.
+
+. Check status of crio.
+.. sudo systemctl status crio.
+====
+. Add the *NOKIA software repository* to your Kubernetes host using the following command. The values of "NOKIALOGIN" and "NOKIAPWD" are automatically set when you execute the NokiaSWRepoAccessProvider binary file. Run the following command every time after you
+execute NokiaSWRepoAccessProvider binary file and when you want to check for updates from the Nokia software repository.
++
+.Add helm repository
+[source]
+----
+helm repo add NOKIA https://artifactory.net.nokia.com/artifactory/fnpc_helm_virtual --username "$NOKIALOGIN" --password "$NOKIAPWD" --pass-credentials
+----
++
+If you are running the above command on helm version {helm-version}, you will need to include the additional argument '--pass-credentials'. See https://github.com/helm/helm/issues/9851 for more details.
+"NOKIA" is added to your repositories.
+
+. Check for updates from the Nokia software repository.
++
+.Update helm repository
+[source]
+----
+helm repo update
+----
++
+The following message displays:
++
+----
+Hang tight while we grab the latest from your chart repositories...
+...Skip local chart repository
+...Successfully got an update from the "NOKIA" chart repository
+Update Complete. Happy Helming!
+----
+
+. Search for the latest helm charts or a specific chart version.
++
+
+Use the following command.
++
+[source, bash, subs=attributes]
+----
+helm search repo --devel {helm-chart-name}
+----
++
+OR
++
+[source, bash, subs=attributes]
+----
+helm search repo {helm-chart-name} --version {chart-version}-NNNN
+----
++
+
+. Download the *{helm-chart-name}* chart to your local directory.
++
+Use the following command:
++
+.Download helm charts
+[source, bash, subs=attributes]
+----
+helm pull NOKIA/{helm-chart-name} --version {chart-version}-NNNN
+----
++
+The downloaded files are available in the local directory of your Kubernetes host.
+
+. Extract the *{helm-chart-name}* chart
++
+.Extract helm chart
+[source, bash, subs=attributes]
+----
+tar -xvf {helm-chart-name}-{chart-version}-NNNN.tgz
+----
+
+. Look for the contents extracted from the zip file inside {helm-chart-name} directory.
++
+[source, subs=attributes]
+----
+host:~/{helm-chart-name}$ ls
+----
++
+.Sample output of the command
+[source]
+----
+Chart.yaml keycloak/ templates/ tools/ values-23_12.yaml values.yaml
+----
++
+When the altiplano-solution chart is deployed, make sure the relevant variables are added to
+enable {app-short-name} functionality and then deploy the {app-short-name} chart.
+
+=== Download the helm charts from Nokia SWDP
+
+You can download the sample Helm chart files from the *Nokia SWDP* (requires internet access to your host). You must have valid login credentials for the Support Portal.
+
+Before proceeding with the procedure, verify that your Support Portal account is valid and works as expected by going to https://customer.nokia.com/support and using your Nokia support account to log in.
+
+Nokia SWDP uses token-based authentication. The generated token is valid for a period of 90 days.
+
+In the commands used for SWDP access, the login name must be extended with the following parameters:
+
+* Email Address: The email address of the user who is performing the download
+* COUNTRYCODE (Applicable only for Nokia users): The country code must be used in situations where the downloader is not downloading from the same country as the legal address of the customer. Country codes are the standard country abbreviations, such as GB, US, BE, DE.
+* End Customer Id: The End customer Id is to be used in case the person who is performing the download does this on behalf of another customer. You can view the Customer Id in the Service Portal (link:https://services.support.nokia.com/services/company_mapping[Service Portal]).
+
+The format of the login name is: '<email address>, <COUNTRYCODE>, <end customer id>'.
+
+. Identify which server to use.
++
+[source]
+----
+$ curl -X POST -s -u <user email address> https://swdpfi.support.nokia.com/api/v1/token/create | cut -f12 -d\"
+----
++
+Here, https://swdp-fi.support.nokia.com = SWDP_URL
++
+The following message displays:
++
+[source]
+----
+Enter host password for user <user email address>:
+----
++
+Enter the Nokia provided password.
+The following is returned:
+
+* FIN Pull Cluster
+* US Pull Cluster
++
+If the return value is FIN, continue with SWDP_URL= https://swdp-fi.support.nokia.com
++
+If the return value is US, continue with SWDP_URL= https://swdp-us.support.nokia.com
+
+. Generate the token
++
+[source]
+----
+SWDPTOKEN=`curl -X POST -s -u <user email address>,,<endcustomerid>
+SWDP_URL/api/v1/token/create | cut -f 4 –d\"`
+----
++
+The following message displays:
++
+[source]
+----
+Enter host password for user <user email address>:
+----
++
+Enter the Nokia provided password.
++
+The SWDPTOKEN is generated.
+
+[NOTE]
+====
+In the commands used for SWDP access, enter the login details as follows:
+
+* username: PAT
+* password: $SWDPTOKEN
+====
+
+====
+*The following procedure is applicable for Kubernetes environment with containerd
+runtime.*
+
+*config.toml* (/etc/containerd/config.toml) must be configured for authentication on every Kubernetes node where you want to download the {app-short-name} image for Kubernetes environment with containerd runtime.
+
+For example::
+. Generate SWDP Token and export SWDPTOKEN=<SUBSTITUTE TOKEN VALUE>
+. Take a backup of config.toml.
+. Edit config.toml.
+.. sudo vi /etc/containerd/config.toml.
+..  Substitute the value for <SWDP_PRODUCT_DOCKER_URL>.
++
+where,
++
+... altiplano-wnp-product-docker.swdp-fi.support.nokia.com.
+... altiplano-wnp-product-docker.swdp-us.support.nokia.com.
+
+.. Substitute the value PAT for <USERNAME>.
+.. Substitute the value SWDPTOKEN for <PASSWORD>.
+.. Substitute the values for <AUTH> with output of echo -n 'PAT:$SWDPTOKEN' | base64.
++
+[source]
+----
+[plugins]
+  [plugins.cri]
+  sandbox_image = "<SWDP_PRODUCT_DOCKER_URL>/pause:3.9"
+  [plugins.cri.registry]
+  [plugins.cri.registry.mirrors]
+  [plugins.cri.registry.mirrors."docker.io"]
+  endpoint = ["https://registry-1.docker.io"]
+  [plugins.cri.registry.mirrors."<SWDP_PRODUCT_DOCKER_URL>"]
+  endpoint = ["https://<SWDP_PRODUCT_DOCKER_URL>"]
+  [plugins.cri.registry.configs]
+  [plugins.cri.registry.configs."<SWDP_PRODUCT_DOCKER_URL>".auth]
+  username = "PAT"
+  password = "<PASSWORD>"
+  auth = "<AUTH>"
+----
+
+. Restart containerd.
+.. sudo systemctl restart containerd.
+
+. Check status of containerd.
+.. sudo systemctl status containerd.
+
+*The following procedure is applicable for Kubernetes environment with crio runtime.*
+
+*crio.conf* (/etc/crio/crio.conf) must be configured for authentication on every Kubernetes node where you want to download the {app-short-name} image for Kubernetes environment with crio runtime.
+
+For example::
+. Generate SWDP Token and export SWDPTOKEN=<SUBSTITUTE TOKEN VALUE>.
+
+. Take a backup of crio.conf.
+
+. Create a config.json file.
+
+.. sudo vi config.json.
+.. Substitute the value for <SWDP_PRODUCT_DOCKER_URL>.
++
+where,
++
+... altiplano-wnp-product-docker.swdp-fi.support.nokia.com.
+... altiplano-wnp-product-docker.swdp-us.support.nokia.com.
+
+.. Substitute the values for <AUTH> with output of echo -n 'PAT:$SWDPTOKEN' | base64.
++
+[source,json]
+----
+{
+  "auths": {
+      "<SWDP_PRODUCT_DOCKER_URL>": {
+      "auth": "<AUTH>"
+      }
+  }
+}
+----
+
+. Edit crio.conf.
+.. sudo vi /etc/crio/crio.conf.
+.. Subtitute the path for <PATH_TO_CONFIG.JSON>.
++
+Example:
++
+[source]
+----
+# The path to a file containing credentials necessary for pulling
+images from
++
+# secure registries. The file is similar to that of
+/var/lib/kubelet/config.json
++
+global_auth_file = "<PATH_TO_CONFIG.JSON>"
+----
+
+. Restart crio.
+.. sudo systemctl restart crio.
+
+. Check status of crio.
+.. sudo systemctl status crio.
+====
+
+. Use the following command to add the NOKIA helm repository to your Kubernetes host. The
+values in the username and password are referring to your support portal login and support
+portal password.
+
++
+.Add helm repo
+[source, subs=attributes]
+----
+helm repo add NOKIA https://swdp-fi.support.nokia.com/artifactory/Altiplano-{app-short-name}-Product-Helm --username PAT --password $SWDPTOKEN --pass-credentials
+"NOKIA" is added to your repositories.
+
+If you are running the above command on helm version {helm-version}, you will need include
+to additional argument '--pass-credentials'. See
+https://github.com/helm/helm/issues/9851 for more details.
+----
+
+. Check for the updates from the Nokia helm repository.
++
+.Update helm repo
+[source]
+----
+helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Skip local chart repository
+...Successfully got an update from the "NOKIA" chart repository
+Update Complete. Happy Helming!
+----
+
+. Search for the latest helm charts or a specific chart version.
++
+[source, bash, subs=attributes]
+----
+helm search --devel NOKIA/{helm-chart-name}
+NAME CHART VERSION APP VERSION DESCRIPTION
+NOKIA/{helm-chart-name} {chart-version}-NNNN {chart-version}_NNNN A Helm chart for {main-base-app} {app-short-name}
+----
++
+Use one of the following commands:
++
+[source, subs=attributes]
+----
+helm search repo --devel {helm-chart-name}
+----
++
+or
++
+[source, bash, subs=attributes]
+----
+helm search repo NOKIA/{helm-chart-name} --version {chart-version}-NNNN
+----
+
+. Download the {helm-chart-name} chart to your local directory.
++
+Use the following command.
++
+[source, subs=attributes]
+----
+helm pull NOKIA/{helm-chart-name} --version {chart-version}-NNNN
+----
++
+The downloaded files are available in the local directory of your Kubernetes host.
+
+. Extract the {helm-chart-name} chart.
++
+Extract helm chart
++
+[source, bash, subs=attributes]
+----
+tar -xvf {helm-chart-name}-{chart-version}-NNNN.tgz
+----
++
+Look for the contents extracted from the zip file inside {helm-chart-name} directory.
++
+[source, subs=attributes]
+----
+host:~/{helm-chart-name}$ ls
+----
++
+.Sample output of command
+[source]
+----
+Chart.yaml keycloak/ templates/ tools/ values-23_12.yaml values.yaml
 ----
 
 [NOTE]
 ====
-The steps to retrieve the token can be executed on any machine with internet access.
-It does not have to be the same machine where the application will be installed.
+If a customer is successfully onboarded, but unable to access the {app-short-name} software
+correctly, it is recommended to create a support ticket to SWDP using the Support
+Portal (https://customer.nokia.com/support/s/). Make sure to verify the complete
+command before opening a support ticket to understand the issue. Add the
+timestamp when the error occurred so the FN support team can search for the error
+in the platform logs.
 ====
 
 === Configuring Helm chart
 
-When installing the {app-short-name}, configuration in the *values.yaml* file included in the chart release is used.
-This file allows you to define the configurations required for the {app-full-name} to function properly.
-The different available configuration sections are explained below.
+When installing the {app-short-name}, configuration from the *values.yaml* file inside the chart release is used.
+This file allows setting configurations needed by the {app-full-name} to function properly.
+
+The different available configuration sections are explained below:
 
 ==== imagePullSecrets
 
-Configuration is required when the images are downloaded from Condor AWS registry or any other private registry.
-Set enabled=true and provide the appropriate login credentials in the “auth” attribute the proper login credentials that to allow access connection to the registry.
+Configuration is required only if the images registry is not public and requires login.
+In case enabled=true, the “config” attribute must contain the proper login credentials that allows connection to the registry.
 
-In the case of Condor registry, the token to be added to the "auth" attribute can be retrieved by executing the
-following steps:
-
-* Install "AWS Command Line Interface" if it is not installed yet
-
-* Import the CSV file provided by Condor with the credentials to log in to AWS:
-
-[source,bash]
-----
-aws configure import --csv file://registry-client_accessKeys.csv
-----
-
-* Execute docker login to AWS registry to retrieve the token:
-
-[source,bash]
-----
-aws ecr get-login-password --region us-east-1 --profile registry-client | docker login
---username AWS --password-stdin 288739758763.dkr.ecr.us-east-1.amazonaws.com
-----
-
-* Copy the generated token in the "auth" attribute from the config.json file of docker
-(The output of the aws ecr command show the path of the config.json file. Default one is:
-/home/USER/.docker/config.json)
-
-
-* Add the output of the last command (AWS token) to the "auth" attribute in the
-values.yml file
-
-[NOTE]
-====
-The steps to retrieve the token can be executed in any machine with internet access.
-It does not have to be the same machine where the application will be installed.
-====
 
 ==== {app-short-name} Configuration
 
