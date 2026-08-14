@@ -301,8 +301,8 @@ For example::
 +
 where,
 +
-... altiplano-wnp-product-docker.swdp-fi.support.nokia.com.
-... altiplano-wnp-product-docker.swdp-us.support.nokia.com.
+... altiplano-{app-short-name}-product-docker.swdp-fi.support.nokia.com.
+... altiplano-{app-short-name}-product-docker.swdp-us.support.nokia.com.
 
 .. Substitute the value PAT for <USERNAME>.
 .. Substitute the value SWDPTOKEN for <PASSWORD>.
@@ -348,8 +348,8 @@ For example::
 +
 where,
 +
-... altiplano-wnp-product-docker.swdp-fi.support.nokia.com.
-... altiplano-wnp-product-docker.swdp-us.support.nokia.com.
+... altiplano-{app-short-name}-product-docker.swdp-fi.support.nokia.com.
+... altiplano-{app-short-name}-product-docker.swdp-us.support.nokia.com.
 
 .. Substitute the values for <AUTH> with output of echo -n 'PAT:$SWDPTOKEN' | base64.
 +
