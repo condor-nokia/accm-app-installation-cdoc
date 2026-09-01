@@ -2,6 +2,7 @@ include::ROOT:conf/Configuration_properties.adoc[leveloffset=0]
 
 = What's new in Release {release-number}{prerelease-tag}
 
-* New installation procedure
+* Lifecycle Flowchart: Added a new diagram to the overview page.
+* Configuration params were cleaned to list only user configurable params.
 
 include::ROOT:go-back-component.adoc[Back]
