@@ -507,11 +507,19 @@ Also take into account the variable IBN_INTENT_FOR_CLUSTER since it refers to th
 for correct operation.
 ====
 
-[width="100%",cols="20%,50%,10%,10%,10%",options="header"]
+//TODO: no toma el ancho definido. Parece ser por algunas valores de ciertas filas
+//[width="100%",cols="10%,60%,10%,10%,10%",options="header"]
+//EN Name LARGOS, EN VARIABLES DE CONFIG LARGAS, PODEMOS INDICAR QUE QUEREMOS CORTAR LA PALABRA CON
+//&#8203; (carácter de espacio de ancho cero)
+[cols="2,5,1,1,1", options="header"]
 |===
-|*Name* |*Description* |*Mandatory (Yes/No)* |*Default Value* |*Allowed Values*
+|*Name*
+|*Description*
+|*Mandatory (Yes/No)*
+|*Default Value*
+|*Allowed Values*
 
-|INGRESS_CONTROLLER_TYPE
+|INGRESS_&#8203;CONTROLLER_TYPE
 |Defines the type of Ingress Controller expected by ACCM to configure the corresponding routing rules. It defaults to 'kong', but also accepts 'nginx' for backward compatibility with the previously used ingress.
 |Yes
 |"kong"
@@ -523,7 +531,7 @@ for correct operation.
 |None
 |IP Address
 
-|KEYCLOAK_PORTAL_SECRET
+|KEYCLOAK_PORTAL_&#8203;SECRET
 |ALTIPLANO client secret from keycloak. It must be copied from the keycloak configuration.
 |Yes
 |None
@@ -535,7 +543,7 @@ for correct operation.
 |"/nokia-altiplano-ac"
 |String
 
-|ALTIPLANO_OPENSEARCH_PATH_URL
+|ALTIPLANO_&#8203;OPENSEARCH&#8203;_PATH_URL
 |{main-base-app}’s OpenSearch REST API path. (There is no need to change default value except {main-base-app} changes the OpenSearch REST API path)
 |No
 |"/altiplano-indexsearch"
@@ -547,511 +555,100 @@ for correct operation.
 |"altiplano-fluentd"
 |String
 
-|FLUENTD_LOG_LEVEL
-|Fluentd log level.
-|No
-|"info"
-|String
-
-|FLUENTD_LOG_TIMEOUT
-|Timeout in milliseconds for the Fluentd requests.
-|No
-|"10000"
-|Unsigned Integer
-
-|IBN_INTENT_FOR_CLUSTER
+|IBN_INTENT_&#8203;FOR_CLUSTER
 |Intent type name used for the cluster instances.
 |Yes
 |"leaf-spine-network"
 |String
 
-|ALTIPLANO_GEO_ACTIVE_SITE
+|ALTIPLANO_GEO_&#8203;ACTIVE_SITE
 |Defines whether the current deployment is the active geographic site ("true"). If it is not set to "true", the initContainer blocks the application from starting and waits in a loop until the site is promoted to active.
 |Yes
 |"true"
 |String
 
-|CP_LEAVES_BATCH_SIZE
-|Size of the batch for CP leaves processing.
-|Yes
-|1
-|Integer
-
-|ACC_LEAVES_BATCH_SIZE
-|Size of the batch for ACC leaves processing.
-|Yes
-|1
-|Integer
-
-|REMOTE_OLT_BATCH_SIZE
-|Size of the batch for remote OLT processing.
-|Yes
-|1
-|Integer
-
-|CAMPAIGN_NAME_MAX_LENGTH
-|Maximum length allowed for the campaign name.
-|Yes
-|18
-|Integer
-
-|CAMPAIGN_EXECUTION_WINDOW_MINUTES
-|Execution window for the campaign in minutes.
-|Yes
-|20
-|Integer
-
-|ALTIPLANO_ACTIVITY_MANAGER
-|Service name for the Altiplano activity manager.
-|Yes
-|"nokia-altiplano-network-virtualizer"
-|String
-
-|ALTIPLANO_ACTIVITY_ABORT_PREPARATION_DAYS
-|Number of days for abort preparation.
-|Yes
-|3
-|Integer
-
-|ALTIPLANO_ACTIVITY_TIMEOUT_DOWNLOAD
-|Timeout for the download activity in minutes.
-|Yes
-|60
-|Integer
-
-|ALTIPLANO_ACTIVITY_TIMEOUT_UPGRADE
-|Timeout for the upgrade activity in minutes.
-|Yes
-|120
-|Integer
-
-|ALTIPLANO_ACTIVITY_REACHABLE
-|Check if the activity target must be reachable.
-|Yes
-|true
-|Boolean
-
-|ALTIPLANO_ACTIVITY_FORCE_ONT_SOFTWARE
-|Force the ONT software version during activity.
-|Yes
-|true
-|Boolean
-
-|ALTIPLANO_ACTIVITY_PREPARE_DEVICE_INTENT
-|Prepare device intent before starting the activity.
-|Yes
-|false
-|Boolean
-
-|ALTIPLANO_ACTIVITY_OPERATION_DOWNLOAD
-|Operation type for software download.
-|Yes
-|"software-download"
-|String
-
-|ALTIPLANO_ACTIVITY_OPERATION_UPGRADE
-|Operation type for software upgrade.
-|Yes
-|"software-upgrade"
-|String
-
-|ALTIPLANO_ACTIVITY_SYNC_DEVICE_CONFIG
-|Synchronize device configuration.
-|Yes
-|false
-|Boolean
-
-|ALTIPLANO_ACTIVITY_MAX_ERRORS_BEFORE_PAUSE
-|Maximum number of errors before pausing the activity.
-|Yes
-|""
-|String
-
-|ALTIPLANO_ACTIVITY_PERCENT_DEVICE_READY
-|Required percentage of ready devices to proceed.
-|Yes
-|0
-|Integer
-
-|ALTIPLANO_ACTIVITY_HARDWARE_TYPE_INSIDE
-|Hardware type filter for internal activities.
-|Yes
-|""
-|String
-
-|ALTIPLANO_ACTIVITY_SCHEDULED_START_TIME
-|Specific scheduled start time for the activity.
-|Yes
-|""
-|String
-
-|ALTIPLANO_ACTIVITY_START_NO_LATER_THAN
-|Deadline to start the activity.
-|Yes
-|""
-|String
-
-|ALTIPLANO_ACTIVITY_MAX_JOB_DURATION
-|Maximum duration for the job execution.
-|Yes
-|240
-|Integer
-
-|ALTIPLANO_ACTIVITY_ONT_ACTIVATION_OPTION
-|Option for ONT activation timing.
-|Yes
-|"immediate-activation"
-|String
-
-|ALTIPLANO_ACTIVITY_ONT_SW_MAPPING_MODES
-|Software mapping modes for ONT.
-|Yes
-|"[]"
-|String
-
-|ALTIPLANO_ACTIVITY_DOWNLOAD_OPTION
-|Download option for the device.
-|Yes
-|"device-staging-ont"
-|String
-
-|ACTIVITY_POST_CHECKS_ENABLED
-|Flag to enable post-execution validation checks for activities.
-|Yes
-|false
-|Boolean
-
-|ACTIVITY_SUFFIX_DOWNLOAD
-|Suffix to be added to the download activity.
-|Yes
-|"DL"
-|String
-
-|ACTIVITY_SUFFIX_UPGRADE_SPINE
-|Suffix to be added to the upgrade spine activity.
-|Yes
-|"UPG_SP"
-|String
-
-|ACTIVITY_SUFFIX_UPGRADE_CP_BATCH
-|Suffix to be added to the upgrade CP Batch activity.
-|Yes
-|"UPG_CPB"
-|String
-
-|ACTIVITY_SUFFIX_UPGRADE_ACC_BATCH
-|Suffix to be added to the upgrade Access Batch activity.
-|Yes
-|"UPG_ACB"
-|String
-
-|ACTIVITY_SUFFIX_UPGRADE_HEADEND
-|Suffix to be added to the upgrade headend activity.
-|Yes
-|"UPG_HE"
-|String
-
-|ACTIVITY_SUFFIX_UPGRADE_OLT_BATCH
-|Suffix to be added to the upgrade olt batch activity.
-|Yes
-|"UPG_OLTB"
-|String
-
-|ALTIPLANO_ACTIVITIES_PATH
-|Endpoint base path for managing Altiplano activities.
-|Yes
-|"/activities"
-|String
-
-|NOTIFICATION_POLLING_INTERVAL
-|Interval in milliseconds to check for notifications in DB.
-|Yes
-|1000
-|Integer
-
-|LIGHTSPAN_DEVICES_INTENT_TYPES
-|Intent types that are used for lightspan devices.
-|Yes
-|"device-fx,device-mf"
-|String
-
-|IP_DEVICES_INTENT_TYPES
-|Intent types that are used for IP devices.
-|Yes
-|"device-ixr"
-|String
-
-|ACTIVITY_POST_CHECKS_ENABLED
-|Post checks validations flag that allows to enable/disable all the validations .
-|Yes
-|"true"
-|Boolean
-
-|ACTIVITY_TRAFFIC_POST_CHECK_ENABLED
-|Post checks traffic validations flag that allows to enable/disable only the traffic part of the validations.
-|Yes
-|"false"
-|Boolean
-
-|DEVICE_UPLINK_CONNECTION_INTENT_TYPE
-|Intent types that are used for uplink connections.
-|Yes
-|"uplink-connection"
-|String
-
-|DEVICE_ETHERNET_CONNECTION_INTENT_TYPE
-|Intent types that are used for ethernet connections.
-|Yes
-|"ethernet-connection"
-|String
-
-|REACT_APP_SUGGEST_API
-|Suggest API used for software in ACCM UI.
-|Yes
-|"/campaign-manager-api/rest/software/v1"
-|String
-
-|REACT_APP_SUGGEST_MAP_DEVICE_TYPE
-|Suggest device type API used for software in ACCM UI.
-|Yes
-|'{\"composite-device\":\"/campaign-manager-api/rest/software/v1/suggest/interfaceVersionsDirectFromAV\",\"ixr-device\":\"/campaign-manager-api/rest/mds/suggest/interfaceVersionsDirectFromNSP\"}'
-|String
-
-|ALTIPLANO_IBN_LIVE_COLLECTION_PATH
-|Altiplano's live collection REST API used by the ACCM application.
-|Yes
-|"/rest/ibn/livecollection/v1"
-|String
-
-|STATUS_PER_DEVICES_MAX_PAGE_SIZE
-|Defines the maximum page size for the endpoint statusPerDevices from Software Managment Module in Altiplano. Only accepts values greater than 0 (Zero)
-|Yes
-|200
-|Integer
-
-|KEYCLOAK_URL
-|Path for Keycloak login authentication.
-|Yes
-|"/rest/auth/login"
-|String
-
-|ACCM_KEYCLOAK_USER
+|ACCM_KEYCLOAK_&#8203;USER
 |Username for Keycloak authentication.
 |Yes
 |"adminuser"
 |String
 
-|ACCM_KEYCLOAK_PASSWORD
+|ACCM_KEYCLOAK_&#8203;PASSWORD
 |Password for Keycloak authentication.
 |Yes
 |"password"
 |String
 
-|ALTIPLANO_DELETE_ACTIVITIES_PATH
-|Endpoint path to delete activities.
+|KAFKA_CONSUMER_&#8203;SERVER
+a|
+The Altiplano Kafka service that ACCM uses to consume events.
+
+NOTE: For HA (High Availability) deployments, change this value to altiplano-kafka-headless.
+
 |Yes
-|"/activities/delete"
+|"altiplano-kafka-0&#8203;-broker-external"
 |String
 
-|ALTIPLANO_URL_SM_CAMPAIGNS_ACTIVITIES
-|URL for SM campaigns activities management.
+|KAFKA_CONSUMER_&#8203;PORT
+a|
+The Altiplano Kafka service port used by ACCM to consume events.
+
+NOTE: For HA deployments using the headless service, change this port to 9092.
+
 |Yes
-|"/rest/sm/campaigns"
+|9093
+|Unsigned Integer
+
+|KAFKA_CONSUMER_&#8203;TOPIC
+|The topic that ACCM uses to listen to software management state changes. (No need to change unless the Altiplano topic name changes).
+|Yes
+|"nokia-altiplano-ac-&#8203;SOFTWARE_&#8203;MANAGEMENT&#8203;_STATE_CHANGE"
 |String
 
-|ALTIPLANO_URL_TARGET_SOLUTIONS
-|URL to retrieve multiple target solutions.
+|KAFKA_PRODUCER_&#8203;SERVER
+a|
+The Altiplano Kafka service that ACCM uses to produce/send events.
+
+NOTE: For HA (High Availability) deployments, change this value to altiplano-kafka-headless.
+
 |Yes
-|"/rest/sm/target-solutions"
+|"altiplano-kafka-0-broker-external"
 |String
 
-|ALTIPLANO_URL_TARGET_SOLUTION
-|URL to retrieve a specific target solution.
-|Yes
-|"/rest/sm/target-solution"
-|String
+|KAFKA_PRODUCER_&#8203;PORT
+a|
+The Altiplano Kafka service port used by ACCM to produce events.
 
-|ALTIPLANO_URL_SOFTWARE_CAMPAIGNS
-|URL for software campaigns version 1.
-|Yes
-|"/rest/software/v1/campaigns"
-|String
+NOTE: For HA deployments using the headless service, change this port to 9092.
 
-|ALTIPLANO_URL_SM_CAMPAIGNS
-|Base URL for SM campaigns.
 |Yes
-|"/rest/sm/campaign"
-|String
-
-|ALTIPLANO_URL_DEVICES_FILTER
-|URL to filter devices within a campaign.
-|Yes
-|"/rest/sm/campaigns/activities/devices?orderBy=NAME&orderType=ASC&pageSize=10000"
-|String
-
-|ALTIPLANO_URL_TOPOLOGY_IBN
-|URL path for IBN topology and intents.
-|Yes
-|"/rest/restconf/data/ibn:ibn/intent="
-|String
-
-|SW_MATRIX_API_PATH
-|Path for software matrices API.
-|Yes
-|"/software-matrices"
-|String
-
-|ALTIPLANO_AUTH_BASE_PATH_URL
-|Base path for Altiplano SSO authentication.
-|Yes
-|"/altiplano-sso"
-|String
-
-|ALTIPLANO_AUTH_DEFAULT_REALM
-|Default authentication realm.
-|Yes
-|"master"
-|String
-
-|KEYCLOAK_CLIENT_ID
-|Client ID used by the ACCM to retrieve tokens.
-|Yes
-|"ALTIPLANO"
-|String
-
-|KEYCLOAK_PORTAL_ID
-|Client ID used for Keycloak portal.
-|Yes
-|"campaign-manager_portal"
-|String
-
-|REACT_APP_INGRESS_HOST
-|Ingress host URL for the web application.
-|Yes
-|"https://localhost:8443"
-|String
-
-|REACT_APP_CONTEXT_ROOT
-|Context root for the React application.
-|Yes
-|"/campaign-manager-webapp"
-|String
-
-|REACT_APP_KEYCLOAK_URL
-|Keycloak URL used by the React frontend.
-|Yes
-|"https://localhost:8443/altiplano-sso"
-|String
-
-|REACT_APP_KEYCLOAK_REALM
-|Keycloak realm used by the React frontend.
-|Yes
-|"master"
-|String
-
-|REACT_APP_KEYCLOAK_CLIENT_ID
-|Keycloak client ID for the React application.
-|Yes
-|"campaign-manager_portal"
-|String
-
-|REACT_APP_KEYCLOAK_TOKEN_ENDPOINT
-|Endpoint for retrieving Keycloak tokens in the UI.
-|Yes
-|"https://localhost:8443/campaign-manager-ac/web/token"
-|String
-
-|REACT_APP_GRID_PAGE_SIZE
-|Default page size for data grids in the UI.
-|Yes
-|"10"
-|String
-
-|FLUENTD_LOG_HOST
-|Host address for the Fluentd logging service.
-|Yes
-|"altiplano-fluentd"
-|String
-
-|POD_LOG_LEVEL
-|Logging level for the application pod.
-|Yes
-|"debug"
-|String
-
-|ACTIVITY_ACTIVE_WAIT_ENABLED
-|Flag to enable/disable the active wait for activities. If it is true then polling is used to detect when an activity changes state. This mechanism can be used if Kafka notifications are not working and the older polling mechanism is desired.
-|Yes
-|"false"
-|Boolean
-
-|ACTIVITY_STATUS_NOTIFICATION_TIMEOUT_MINUTES
-|Time in minutes that the orchestrator waits for an activity status change notification to arrive from Altiplano. Once this time has elapsed, the campaign ends with a timeout error.
-|Yes
-|60
-|Integer
-
-|ACCM_KEYCLOAK_TOKEN_ACCEPTANCE_LEEWAY_SECONDS
-|Buffer used when validating token expiration to account for time differences between the Keycloak server and the application server.
-|Yes
-|10
-|Integer
-
-|CAMPAIGN_NAME_SEPARATOR_CHAR
-|Character used as a separator for parts in the campaign and activity naming scheme.
-|Yes
-|"_"
-|String(length: 1)
-
-|VALIDITY_WINDOW_ENABLED
-|Flag to enable/disable the validity window feature.
-|Yes
-|"true"
-|Boolean
-
-|ACTIVITY_SUFFIX_UPGRADE_ONT
-|Suffix to be added to the ONT upgrade activity.
-|Yes
-|"UPG_ONT"
-|String
-
-|CAMPAIGN_NAME_RESTRICTED_CHARS
-|Unsafe characters that are not allowed to be used in campaign names.
-|Yes
-|""
-|String
-
-|DEEPLINK_PATH_SOFTWARE_MANAGMENT_CAMPAIGNS
-|Specifies the URL path used to navigate directly to a specific campaign within the Software Management interface. It must contain the campaign name placeholder specified in the DEEPLINK_CAMPAIGN_NAME_PLACEHOLDER variable.
-|Yes
-|"/software-management/#/campaigns/{altiplanoCampaignName}"
-|String
-
-|DEEPLINK_PATH_SOFTWARE_MANAGMENT_ACTIVITY_DEVICES
-|Specifies the URL path used to navigate directly to a specific device's activity details within a software management campaign. It must contain the placeholders for campaign name, activity name, and device name specified in the variables
-|Yes
-|"/software-management/#/campaigns/{altiplanoCampaignName}/activities/{activityName}/devices/{deviceName}"
-|String
-
-|DEEPLINK_CAMPAIGN_NAME_PLACEHOLDER
-|Defines the exact placeholder string used in the deep link paths that the system will dynamically replace with the actual Software Management's campaign name at runtime.
-|Yes
-|"{altiplanoCampaignName}"
-|String
-
-|DEEPLINK_ACTIVITY_NAME_PLACEHOLDER
-|Defines the exact placeholder string used in the deep link paths that the system will dynamically replace with the actual Software Management's activity name at runtime.
-|Yes
-|"{activityName}"
-|String
-
-|DEEPLINK_DEVICE_NAME_PLACEHOLDER
-|Defines the exact placeholder string used in the deep link paths that the system will dynamically replace with the target device's name at runtime.
-|Yes
-|"{deviceName}"
-|String
+|9093
+|Unsigned Integer
 
 |===
+
+==== Custom Certificate Configuration (Custom CA)
+By default, the application expects standard certificates, and the values.yaml file is preconfigured as follows:
+[source,yaml]
+----
+privateCacert:
+  enabled: true
+  secret: altiplano-ca-certificate-secrets
+  files:
+    altiplanoRoot: root_cacert.pem
+    altiplanoIssuer: issuer_cacert.pem
+----
+
+If the target server uses custom certificates (different from the default ones), you must
+modify this section before deployment to point to the correct files. Update the following
+parameters to match your infrastructure:
+
+* *secret:* Replace this with the name of the Kubernetes Secret containing your
+custom certificates.
+* *altiplanoRoot:* Enter the exact name of the key/file containing your Root CA
+certificate within that Secret.
+* *altiplanoIssuer:* Enter the exact name of the key/file containing your Issuer CA
+certificate within that Secret.
 
 ==== Database Configuration
 
