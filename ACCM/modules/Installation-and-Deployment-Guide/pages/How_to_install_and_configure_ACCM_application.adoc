@@ -507,10 +507,9 @@ Also take into account the variable IBN_INTENT_FOR_CLUSTER since it refers to th
 for correct operation.
 ====
 
-//TODO: no toma el ancho definido. Parece ser por algunas valores de ciertas filas
-//[width="100%",cols="10%,60%,10%,10%,10%",options="header"]
-//EN Name LARGOS, EN VARIABLES DE CONFIG LARGAS, PODEMOS INDICAR QUE QUEREMOS CORTAR LA PALABRA CON
-//&#8203; (carácter de espacio de ancho cero)
+//In long names or long configuration variables,
+//we can indicate that we want to break the word
+//using &#8203; (a zero-width space character).
 [cols="2,5,1,1,1", options="header"]
 |===
 |*Name*
