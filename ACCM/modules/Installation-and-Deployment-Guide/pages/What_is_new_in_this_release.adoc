@@ -4,5 +4,6 @@ include::ROOT:conf/Configuration_properties.adoc[leveloffset=0]
 
 * Lifecycle Flowchart: Added a new diagram to the overview page.
 * Configuration params were cleaned to list only user configurable params.
+* New steps for Installing Helm Chart section.
 
 include::ROOT:go-back-component.adoc[Back]

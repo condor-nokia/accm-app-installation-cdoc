@@ -683,30 +683,103 @@ This section allows configuring the image that must be downloaded to install the
 
 === Installing Helm chart
 
-Before executing the installation command, ensure that:
+[IMPORTANT]
+====
+.BEFORE YOU START
+- Set your environment variables:
++
+[source,bash]
+----
+export RELEASE_NAME="<your-solution-release-name>"
+export NAMESPACE="<your-namespace>"
+----
+_Replace the placeholders with the values used in your environment._
 
 - All the prerequisites are met. Refer to the xref:_prerequisites[Prerequisites] section.
 - The correct values are configured at the *values.yaml* file. For more details about this configuration, refer to the xref:_configuring_helm_chart[Configuring Helm chart] section.
 - The following values have been configured:
 * *ALTIPLANO_SERVER:* The {main-base-app} IP or Hostname used by the {app-short-name} to access {main-base-app}’s available services. This same value must also be used to access the {app-short-name}.
+====
 
-To install the application, execute the following command:
+To install the application, depending on which option best suits the required installation type, execute the following commands:
 
-[source, bash]
+==== New install (Option A)
+
+_Use the same `[flags]` as your standard AP solution install._
+
+. Install secrets, CRDs, and infra as per your standard AP installation procedure.
++
+*Example (secrets):*
++
+[source,bash]
 ----
-$ helm install altiplano-cm ./
+helm upgrade -i $RELEASE_NAME-secrets <SECRETS_CHART_FOLDER> -n $NAMESPACE [flags]
+----
+*Example (infra):*
++
+[source,bash]
+----
+helm upgrade -i $RELEASE_NAME-infra <INFRA_CHART_FOLDER> -n $NAMESPACE [flags]
 ----
 
-For example, if the chart was decompressed at /home/nokia-installer/altiplano-cm execute the following command:
-
-[source, bash]
+. Retrieve the Keycloak client secret from the cluster:
++
+[source,bash]
 ----
-$ helm install altiplano-cm /home/nokia-installer/altiplano-cm
+CURRENT=$(kubectl get secret altiplano-secrets -n $NAMESPACE -o jsonpath='{.data.keycloak_client_secret}' | base64 --decode)
+----
++
+This reads `keycloak_client_secret` from the `altiplano-secrets` Kubernetes secret and stores it in the variable `$CURRENT` for use in the next step.
+
+. Install the solution chart with ACCM enabled: ACCM needs database `app_cm` (user `app_cm`) on `altiplano-mariadb`. Create it and grant privileges if it does not exist yet.
++
+[source,bash]
+----
+helm upgrade -i $RELEASE_NAME <SOLUTION_CHART_FOLDER> -n $NAMESPACE [flags] \
+    --set global.ACCM_KEYCLOAK_PORTAL_SECRET=$CURRENT \
+    --set tags.altiplano-accm=true \
+    --set altiplano-accm.enabled=true
 ----
 
+==== Existing setup (Option B)
 
-* Wait for the installation of the helm chart to be completed.
-To check all the required {app-short-name} pods and services are up and running, execute the following command:
+. Confirm that the base Altiplano pods are healthy.
+
+. Retrieve the Keycloak client secret from the cluster:
++
+[source,bash]
+----
+CURRENT=$(kubectl get secret altiplano-secrets -n $NAMESPACE -o jsonpath='{.data.keycloak_client_secret}' | base64 --decode)
+----
++
+This reads `keycloak_client_secret` from the `altiplano-secrets` Kubernetes secret and stores it in the variable `$CURRENT` for use in the next step.
+
+. Upgrade the existing solution release: ACCM needs database `app_cm` (user `app_cm`) on `altiplano-mariadb`. Create it and grant privileges if it does not exist yet.
++
+[source,bash]
+----
+helm upgrade $RELEASE_NAME <SOLUTION_CHART_FOLDER> -n $NAMESPACE [flags] \
+    --set global.ACCM_KEYCLOAK_PORTAL_SECRET=$CURRENT \
+    --set tags.altiplano-accm=true \
+    --set altiplano-accm.enabled=true
+----
++
+Replace `[flags]` with `--reuse-values` to keep your current configuration and only enable ACCM on top.
++
+*Example:*
++
+[source,bash]
+----
+helm upgrade $RELEASE_NAME <SOLUTION_CHART_FOLDER> -n $NAMESPACE --reuse-values \
+    --set global.ACCM_KEYCLOAK_PORTAL_SECRET=$CURRENT \
+    --set tags.altiplano-accm=true \
+    --set altiplano-accm.enabled=true
+----
++
+[NOTE]
+Replace `[flags]` with your usual install options.
+
+Wait for the installation to be completed. To check all the required ACCM pods and services are up and running, execute the following command:
 
 .Usage
 [source, bash]
