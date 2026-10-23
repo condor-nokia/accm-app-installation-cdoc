@@ -16,18 +16,18 @@ To enable ACCM authentication, you only need to update the existing ALTIPLANO cl
 
 3. Locate and click on the *ALTIPLANO* client to edit its settings.
 
-4. Scroll down to the URL configuration parameters and add the ACCM endpoints (replace `<ALTIPLANO_SERVER>` with your actual Altiplano public hostname or IP, e.g., `100.121.38.81`):
+4. Scroll down to the URL configuration parameters and add the ACCM endpoints (replace `<ALTIPLANO_PUBLIC_IP>` with your actual Altiplano public hostname or IP, e.g., `100.121.38.81`):
 +
 In the *Valid redirect URIs* field, add:
 +
 ----
-https://<ALTIPLANO_SERVER>/campaign-manager-webapp/*
+https://<ALTIPLANO_PUBLIC_IP>/campaign-manager-webapp/*
 ----
 +
 In the *Valid post logout redirect URIs* field, add:
 +
 ----
-https://<ALTIPLANO_SERVER>/campaign-manager-webapp/*
+https://<ALTIPLANO_PUBLIC_IP>/campaign-manager-webapp/*
 ----
 
 5. Save the changes.

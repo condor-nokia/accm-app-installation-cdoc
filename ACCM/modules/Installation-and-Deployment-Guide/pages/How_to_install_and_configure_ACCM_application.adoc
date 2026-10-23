@@ -501,7 +501,7 @@ This section allows setting specific {app-short-name} configuration used by the 
 
 [IMPORTANT]
 ====
-Complete at least the variables ALTIPLANO_SERVER and KEYCLOAK_PORTAL_SECRET since they do not have a default value.
+Complete the variable KEYCLOAK_PORTAL_SECRET since it does not have a default value.
 
 Also take into account the variable IBN_INTENT_FOR_CLUSTER since it refers to the intent type used for the cluster intents and must match
 for correct operation.
@@ -523,12 +523,6 @@ for correct operation.
 |Yes
 |"kong"
 |String
-
-|ALTIPLANO_SERVER
-|{main-base-app} IP or Hostname that the {app-short-name} uses to call the Altiplano's available services. This value must be also used to access {app-short-name}
-|Yes
-|None
-|IP Address
 
 |KEYCLOAK_PORTAL_&#8203;SECRET
 |ALTIPLANO client secret from keycloak. It must be copied from the keycloak configuration.
@@ -697,8 +691,6 @@ _Replace the placeholders with the values used in your environment._
 
 - All the prerequisites are met. Refer to the xref:_prerequisites[Prerequisites] section.
 - The correct values are configured at the *values.yaml* file. For more details about this configuration, refer to the xref:_configuring_helm_chart[Configuring Helm chart] section.
-- The following values have been configured:
-* *ALTIPLANO_SERVER:* The {main-base-app} IP or Hostname used by the {app-short-name} to access {main-base-app}’s available services. This same value must also be used to access the {app-short-name}.
 ====
 
 To install the application, depending on which option best suits the required installation type, execute the following commands:
